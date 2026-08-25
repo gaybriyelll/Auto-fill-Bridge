@@ -194,14 +194,20 @@
   <!-- STEP 3 -->
   <div class="card">
     <div class="step-head"><span class="step-num">03</span><h2 class="step-title">Install the filler, once</h2></div>
-    <p class="step-sub">Drag this button to your bookmarks bar. It's a one-time setup &mdash; the same bookmarklet works for every site and every future extraction.</p>
+    <p class="step-sub">On desktop, drag this button to your bookmarks bar. On Android (even in desktop-site mode), dragging to the bookmarks bar isn't supported &mdash; use <b>"Copy bookmarklet code"</b> instead and install it by hand. Either way it's a one-time setup.</p>
     <div class="bookmarklet-row">
       <a class="bookmarklet" id="bookmarkletLink" href="#" title="Drag me to your bookmarks bar">&#9889; Fill Form</a>
+      <button class="btn-primary" id="copyBookmarklet" type="button">Copy bookmarklet code</button>
       <button class="btn-primary" id="copyPayload">Copy data for filling</button>
     </div>
     <p class="hint">
-      <b>On the target website:</b> click <b>"Copy data for filling"</b> above, open the page with the form, click the
-      <b>Fill Form</b> bookmark, paste (Ctrl/Cmd+V) into the small panel that appears, then hit <b>Fill form</b>.
+      <b>Desktop:</b> drag the <b>Fill Form</b> button above into your bookmarks bar, once.<br>
+      <b>Android / no drag support:</b> tap <b>"Copy bookmarklet code"</b> to copy it, then bookmark any page in your
+      browser (star icon &rarr; the usual way you bookmark a page). Open your bookmarks, find that new bookmark, edit
+      it, rename it to <b>Fill Form</b>, and replace its URL with what you just copied (paste, Ctrl/Cmd+V), then save.
+      You only need to do this once &mdash; after that it behaves exactly like the desktop bookmark.<br><br>
+      <b>On the target website (either method):</b> click <b>"Copy data for filling"</b> above, open the page with the
+      form, tap the <b>Fill Form</b> bookmark, paste into the small panel that appears, then hit <b>Fill form</b>.
       It matches your keys against each field's id, name, placeholder, or label &mdash; then fills, checks, or selects
       accordingly and dispatches the right events so React/Vue-based forms pick it up too. Fields it can't match are
       listed so you can finish those by hand.
@@ -577,7 +583,16 @@
   };
 
   const code = '(' + fillScript.toString() + ')();';
-  document.getElementById('bookmarkletLink').setAttribute('href', 'javascript:' + encodeURIComponent(code));
+  const bookmarkletHref = 'javascript:' + encodeURIComponent(code);
+  document.getElementById('bookmarkletLink').setAttribute('href', bookmarkletHref);
+
+  document.getElementById('copyBookmarklet').addEventListener('click', ()=>{
+    navigator.clipboard.writeText(bookmarkletHref).then(()=>{
+      toast('Bookmarklet code copied — paste it as a bookmark URL');
+    }).catch(()=>{
+      toast('Clipboard blocked — long-press the Fill Form button and copy its link instead');
+    });
+  });
 })();
 </script>
 </body>
